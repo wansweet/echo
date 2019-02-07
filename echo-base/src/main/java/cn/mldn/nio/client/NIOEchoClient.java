@@ -22,7 +22,8 @@ public class NIOEchoClient {
             buffer.clear() ; // 在读取之前进行缓冲区清空
             int readCount = clientChannel.read(buffer) ;
             buffer.flip() ;
-            System.err.println(new String(buffer.array(),0,readCount));
+            //由于System.out和System.err会出现打印顺序不同，故统一使用System.out
+            System.out.println(new String(buffer.array(),0,readCount));
             if("byebye".equalsIgnoreCase(inputData)) {
                 flag = false ;
             }

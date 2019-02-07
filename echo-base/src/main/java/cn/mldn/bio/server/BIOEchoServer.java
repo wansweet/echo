@@ -18,6 +18,7 @@ public class BIOEchoServer {
         boolean flag = true ;
         ExecutorService executorService = Executors.newFixedThreadPool(10) ;
         while(flag) {
+            // 监听连接进来
             Socket client = serverSocket.accept() ;
             executorService.submit(new EchoClientHandler(client)) ;
         }
@@ -26,19 +27,26 @@ public class BIOEchoServer {
     }
 
     private static class EchoClientHandler implements Runnable {
-        private Socket client ; // 每一个客户端都需要启动一个任务(task)来执行。
+        // 每一个客户端都需要启动一个任务(task)来执行。
+        private Socket client ;
         private Scanner scanner ;
         private PrintStream out ;
-        private boolean flag = true ;   // 循环标记
+        // 循环标记
+        private boolean flag = true ;
         public EchoClientHandler(Socket client) {
-            this.client = client ; // 保存每一个客户端操作
+            // 保存每一个客户端操作
+            this.client = client ;
             try {
                 this.scanner = new Scanner(this.client.getInputStream()) ;
-                this.scanner.useDelimiter("\n") ; // 设置换行符
+                // 设置换行符
+                this.scanner.useDelimiter("\n") ;
                 this.out = new PrintStream(this.client.getOutputStream()) ;
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            String hostAddress = client.getInetAddress().getHostAddress();
+            System.out.println("IP:【"+hostAddress+"】连接");
         }
         @Override
         public void run() {
@@ -54,6 +62,8 @@ public class BIOEchoServer {
                     }
                 }
             }
+
+            // 退出后，进行关闭操作
             this.scanner.close();
             this.out.close();
             try {

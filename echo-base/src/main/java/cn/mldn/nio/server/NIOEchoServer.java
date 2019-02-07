@@ -28,17 +28,22 @@ public class NIOEchoServer {
                 while(this.flag) {  // 需要不断进行交互
                     buffer.clear() ;    // 清空缓冲区
                     int readCount = this.clientChannel.read(buffer) ; // 向缓冲区之中读取数据
-                    String readMessage = new String(buffer.array(),0,readCount).trim() ;
-                    String writeMessage = "【ECHO】" + readMessage + "\n" ; // 回应数据信息
-                    if("byebye".equalsIgnoreCase(readMessage)) {
-                        writeMessage = "【EXIT】拜拜，下次再见！" ;
-                        this.flag = false ;
-                     }
-                     // 数据输入通过缓存的形式完成，而数据的输出同样需要进行缓存操作
-                    buffer.clear() ; // 为了写入新的返回数据而定义
-                    buffer.put(writeMessage.getBytes()) ; // 发送内容
-                    buffer.flip() ; // 重置缓冲区
-                    this.clientChannel.write(buffer) ;// 回应数据
+
+                    if (readCount > 0){
+                        buffer.flip() ; // 重置缓冲区
+                        String readMessage = new String(buffer.array(),0,readCount).trim() ;
+                        String writeMessage = "【ECHO】" + readMessage + "\n" ; // 回应数据信息
+                        if("byebye".equalsIgnoreCase(readMessage)) {
+                            writeMessage = "【EXIT】拜拜，下次再见！" ;
+                            this.flag = false ;
+                        }
+
+                        // 数据输入通过缓存的形式完成，而数据的输出同样需要进行缓存操作
+                        buffer.clear() ; // 为了写入新的返回数据而定义
+                        buffer.put(writeMessage.getBytes()) ; // 发送内容
+                        buffer.flip() ; // 重置缓冲区
+                        this.clientChannel.write(buffer) ;// 回应数据
+                    }
                 }
                 this.clientChannel.close();
             } catch (Exception e) {
